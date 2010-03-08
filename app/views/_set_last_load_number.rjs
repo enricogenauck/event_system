@@ -1,0 +1,1 @@
+page.replace_html 'event_system_last_load', :text => load_number
