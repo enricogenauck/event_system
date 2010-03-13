@@ -10,29 +10,29 @@ describe EventSystem::Indicator do
       end
       
       it "should be created when a new message is created if theres an entry in it's class definition" do
-        Message.class_eval{creates_event :message_event, :on  => [:create]}
+        Message.class_eval{creates_event :kind => :message_event, :on  => [:create]}
         Message.create()
         EventSystem::Indicator.should have(1).records
       end
 
       it "should be created and return the method's value" do
-        Message.class_eval{creates_event :message_event, :on  => [:process]}
+        Message.class_eval{creates_event :kind => :message_event, :on  => [:process]}
         @message = Message.create()
         @message.process.should eql("Message is being processed")
         EventSystem::Indicator.should have(1).records
       end
 
       it "should set the event kind" do
-        Message.class_eval{creates_event :message_event, :on => :create}
+        Message.class_eval{creates_event :kind => :message_event, :on => :create}
         Message.create()
         EventSystem::Indicator.first.kind.should eql(:message_event)
       end
       
       it "should be created three times with custom properties" do
         Message.class_eval{
-          creates_event :message_event
-          creates_event :phantasy_event
-          creates_event :process_event, :on => :process do |event|
+          creates_event :kind => :message_event
+          creates_event :kind => :phantasy_event
+          creates_event :kind => :process_event, :on => :process do |event|
             event.attachment "custom event triggered"
           end
         }
@@ -48,7 +48,7 @@ describe EventSystem::Indicator do
       
       it "should be created with custom data accessor as string using inline block" do
         Message.class_eval{
-          creates_event(:message_event, :on => :create) { |event| event.attachment "custom_message" }
+          creates_event(:kind => :message_event, :on => :create) { |event| event.attachment "custom_message" }
         }
         Message.create()
         EventSystem::Indicator.first.attachment.should eql("custom_message")
@@ -56,7 +56,7 @@ describe EventSystem::Indicator do
       
       it "should be created with custom data accessor as array" do
         Message.class_eval{
-          creates_event :message_event, :on  => :create do |event|
+          creates_event :kind => :message_event, :on  => :create do |event|
             event.attachment [1,2,3]
           end          
         }
@@ -66,7 +66,7 @@ describe EventSystem::Indicator do
       
       it "should be created with custom data accessor as method return value" do
         Message.class_eval{
-          creates_event :message_event, :on  => :create do |event|
+          creates_event :kind => :message_event, :on  => :create do |event|
             event.attachment [1,2,3].first
           end
         }
@@ -76,7 +76,7 @@ describe EventSystem::Indicator do
 
       it "should be created with custom reference object" do
         Message.class_eval{
-          creates_event :message_event, :on  => :create do |event, message|
+          creates_event :kind =>  :message_event, :on  => :create do |event, message|
             event.reference  message.user
             event.attachment [1,2,3].first
           end
@@ -94,7 +94,7 @@ describe EventSystem::Indicator do
       end
 
       it "should expose the object accessor" do
-        Message.class_eval{creates_event :message_event, :on => :create}
+        Message.class_eval{creates_event :kind => :message_event, :on => :create}
         @message = Message.create()
         EventSystem::Indicator.first.reference.should eql(@message)
       end

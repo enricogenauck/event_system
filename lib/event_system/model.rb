@@ -7,10 +7,9 @@ module EventSystem
     module ClassMethods
       attr_accessor :callback_procs
 
-      def creates_event(kind = nil, options = {}, &block)
-        kind ||= "#{self.to_s.underscore}_event"
-        options.reverse_merge! :on => [:create]
-
+      def creates_event(options = {}, &block)
+        options.reverse_merge! :on => [:create], :kind => "#{self.to_s.underscore}_event"
+        kind = options[:kind]
         [options[:on]].flatten.each do |method|
           if [:create, :save].include?(method)
             self.send("after_#{method}", proc{ |obj| EventSystem::Indicator.create_from(obj, kind, block) })
