@@ -108,6 +108,53 @@ describe EventSystem::Indicator do
         EventSystem::Indicator.should have(2).records
         EventSystem::Indicator.all.collect{|i| i.number}.sort.should eql([@counter,@counter.succ])
       end
+
+      it "should wait with function chaining until the method is defined" do
+        Message.class_eval do 
+          # we call the plugin
+	  creates_event(
+            :kind => :message_event,
+            :on => :test_method
+          )
+
+	  # now we define the function
+          def test_method
+          
+          end
+
+        end
+
+        EventSystem::Indicator.should have(0).record
+        Message.new.test_method
+        EventSystem::Indicator.should have(1).record 
+      end
+
+      it "should allow more than one method to be chained" do
+	Message.class_eval do 
+	  creates_event :kind => :message_event, :on => :test_method
+          creates_event :kind => :message_event, :on => :other_method
+
+	  # now we define the function
+          def test_method
+            "test"
+          end
+
+          def other_method
+            "other"
+          end
+
+        end
+        EventSystem::Indicator.should have(0).record
+        Message.new.test_method.should == "test"
+        EventSystem::Indicator.should have(1).record
+        Message.new.test_method.should == "test"
+        EventSystem::Indicator.should have(2).records
+        (m = Message.new).other_method.should == "other"
+        EventSystem::Indicator.should have(3).records
+        m.other_method.should == "other"
+        EventSystem::Indicator.should have(4).records
+
+        end
     end
   end
   
@@ -120,3 +167,4 @@ describe EventSystem::Indicator do
   end
   
 end
+
