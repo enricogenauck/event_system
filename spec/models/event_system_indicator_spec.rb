@@ -154,7 +154,49 @@ describe EventSystem::Indicator do
         m.other_method.should == "other"
         EventSystem::Indicator.should have(4).records
 
+      end
+
+      it "should allow the banged(!) and the query(?) methods" do
+	Message.class_eval do 
+	  creates_event :kind => :message_event, :on => :bang!
+          creates_event :kind => :message_event, :on => :query?
+
+	  # now we define the function
+          def bang!
+            "BANG BANG!!"
+          end
+
+          def query?
+            true
+          end
+
         end
+        EventSystem::Indicator.should have(0).records
+        (m = Message.new).bang!.should == "BANG BANG!!"
+        EventSystem::Indicator.should have(1).record
+        m.query?.should == true
+        EventSystem::Indicator.should have(2).records
+      end
+
+      it 'should handle the functions arguments' do
+        Message.class_eval do
+          creates_event :kind => :message_event, :on => [:func1,:func2]
+          def func1 arg1
+            "arg: #{arg1}"
+          end
+
+          def func2 arg1, arg2
+            "args: #{arg1}, #{arg2}"
+          end
+        end
+        arg1 = random_string
+        arg2 = random_string
+        EventSystem::Indicator.should have(0).records
+        (m = Message.new).func1("ARGUMENT").should == "arg: ARGUMENT"
+        EventSystem::Indicator.should have(1).record
+        m.func2(arg1, arg2).should == "args: #{arg1}, #{arg2}"
+        EventSystem::Indicator.should have(2).records
+      end
     end
   end
   

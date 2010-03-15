@@ -14,13 +14,15 @@ module EventSystem
           if [:create, :save].include?(method)
             self.send("after_#{method}", proc{ |obj| EventSystem::Indicator.create_from(obj, kind, block) })
           else
-           define_method("#{method}_with_create_event") do |*args|
+            suffix=(["!", "?"].include?(last=method.to_s[-1,2])) ? last : ""
+            define_method("#{suffix.empty? ? method : method.to_s.chop}_with_create_event"+suffix) do |*args|
               EventSystem::Indicator.create_from(self, kind, block)
-              if (args.nil? || args.empty?)
-                self.send("#{method}_without_create_event")
-              else
-                self.send("#{method}_without_create_event", args)
-              end
+              #if (args.nil? || args.empty?)
+              #  self.send("#{method}_without_create_event")
+              #else
+              #  self.send("#{method}_without_create_event", args)
+              #end
+              send((suffix.empty? ? method.to_s : method.to_s.chop)+'_without_create_event'+suffix, *args)
             end
 	    unless (methods + instance_methods).include?(method.to_s)
               def method_added method_name
