@@ -27,6 +27,11 @@ module EventSystem
                       :controller => controller_name,
                       :action     => "updates_for_#{action.to_s}"
         end
+
+        # BAD HACK AGAIN
+        # this ensures that we are at the beginning of the route list
+        ActionController::Routing::Routes.routes = 
+          [ActionController::Routing::Routes.routes.pop]+ActionController::Routing::Routes.routes
         
       end
     end
@@ -77,4 +82,8 @@ module EventSystem
       UPDATE_INTERVAL
     end
   end
+  #module Routes
+  #  def draw(map)
+  #end
 end
+
