@@ -1,0 +1,47 @@
+= Event System
+
+== Description
+
+Event System is a Rails plugin for dynamic site updates triggered by custom model changes. 
+
+== Install
+
+script/plugin install http://github.com/enricogenauck/event_system.git
+
+== Prerequisites
+
+- JQuery
+
+== Simple usage
+
+In your model:
+
+  class Message < ActiveRecord:Base
+    creates_event
+  
+    [...]
+  end
+
+In your controller:
+
+  class MessagesController < ApplicationController
+    handles :message, :index
+  
+    def index
+      @messages = Message.all
+    end
+  end
+  
+In your view:
+
+  <%= integrate_event_system %>
+  
+  <div class="event_system_container">
+    <%= render @messages %>
+  </div>
+  
+Given you have the typical partial like _message.html.erb defined, from now on the newly created messages will be inserted in your view by periodically fired ajax requests.
+
+== Authors
+
+- Maintained by {Enrico Genauck}[mailto:kontakt@enricogenauck.de]
