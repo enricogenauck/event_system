@@ -35,3 +35,4 @@ class EventSystem::Indicator < ActiveRecord::Base
     self[:kind].to_sym
   end
 end
+
