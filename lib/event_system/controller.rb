@@ -56,7 +56,7 @@ module EventSystem
                 :partial => tpl,
                 :collection => Indicator.find(:all,
                   :conditions => ["ref_class = ? AND number > ?", klass.to_s.camelize, last_load]
-                ).map {|ind| handler.call(ind)},
+                ).map {|ind| handler.call(ind)}.compact,
                 :as => :object
               )
               break
