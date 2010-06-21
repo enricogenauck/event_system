@@ -11,7 +11,7 @@ module EventSystem
              url = url+'?last_load='+$('#event_system_last_load').text();
              $.getScript(url);
            };
-           setInterval(function() {getNewEvents('#{url}');}, #{interval*1000});")+
+           setInterval(function() {getNewEvents('#{url}');}, #{interval*1000});")
       else
         ""
       end
