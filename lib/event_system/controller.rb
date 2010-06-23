@@ -50,21 +50,22 @@ module EventSystem
           #HACK solution
           #TODO: find a proper solution to get this code readable
 
-          2.times do |n|
-            begin
-              update_response += render_to_string(
-                :partial => tpl,
-                :collection => Indicator.find(:all,
-                  :conditions => ["ref_class = ? AND number > ?", klass.to_s.camelize, last_load]
-                ).map {|ind| handler.call(ind)}.compact,
-                :as => :object
-              )
-              break
-            rescue ActionView::MissingTemplate
-              tpl = FALLBACK_UPDATE_PARTIAL
+          events = Indicator.find(:all, 
+            :conditions => [
+              "ref_class = ? AND number > ?",
+              klass.to_s.camelize, 
+              last_load]
+            ).map{|ind| handler.call(ind)}.compact
+          unless events.empty?
+            2.times do |n|
+              begin
+                update_response += render_to_string(:partial => tpl, :collection => events, :as => :object)
+                break
+              rescue ActionView::MissingTemplate
+                tpl = FALLBACK_UPDATE_PARTIAL
+              end
             end
           end
-
         end
 
         if update_response.empty?
