@@ -8,6 +8,7 @@ class CreateEventSystem < ActiveRecord::Migration
       t.decimal :number, :precision => 20, :scale => 0
       t.timestamps
     end
+    add_index :event_system_indicators, [:number, :ref_class, :ref_id]
     
     create_table :event_system_indicator_sequence, :force => true do |t|
       t.decimal :number, :precision => 20, :scale => 0
